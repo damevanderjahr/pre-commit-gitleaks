@@ -61,7 +61,7 @@ extract_gitleaks() {
     local ext="$2"  # Extract file extension
     case "$ext" in
         tar.gz)
-            tar -xzf "$archive" 'gitleaks' -C .git/hooks/
+            tar -C .git/hooks/ -xzf "$archive" 'gitleaks' 
             ;;
         zip)
             unzip -o "$archive" 'gitleaks.exe' -d .git/hooks/
@@ -133,5 +133,4 @@ if [ "$is_enabled" = "true" ]; then
         gl=".git/hooks/gitleaks.exe"
     fi
     $gl protect -v --staged
-
 fi
