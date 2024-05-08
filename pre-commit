@@ -61,10 +61,10 @@ extract_gitleaks() {
     local ext="$2"  # Extract file extension
     case "$ext" in
         tar.gz)
-            tar -xzf "$archive" 'gitleaks'
+            tar -xzf "$archive" 'gitleaks' -C .git/hooks/
             ;;
         zip)
-            unzip -o "$archive" 'gitleaks.exe'
+            unzip -o "$archive" 'gitleaks.exe' -d .git/hooks/
             ;;
         *)
             echo "Unsupported archive format."
@@ -93,8 +93,6 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-echo "$is_update"
-#TODO: fix path
 if ! [ -d ".git" ]; then
     echo "This is not a git repo, exiting"
     exit 1
@@ -102,37 +100,37 @@ fi
 
 is_enabled=$(git config --local --get hooks.pre-commit.enable)
 
+if { ! [ -f ".git/hooks/gitleaks" ] && ! [ -f ".git/hooks/gitleaks.exe" ] ;} || [ -z "$is_enabled" ] || [ "$is_update" = "true" ]; then
+    # Call the function to get the OS architecture
+    os_arch=$(get_os_arch)
+    echo "The OS architecture is: $os_arch"
+    # Call the function to get the OS type
+    os_type=$(get_os_type)
+    echo "The OS type is: $os_type"
+    # Call the function to get the archive type 
+    archive_type=$(get_archive_type "$os_type")
+    echo "The archive type is: $archive_type"
+    # Get actual gitleaks release number
+    gitleaks_tag=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases?per_page=1 | grep -o '"tag_name": *"[^"]*"' | cut -d '"' -f 4 | sed 's/^.\(.*\)$/\1/')
+    echo "The actual gitleaks release is is: $gitleaks_tag"
+    # Construct file names and links
+    archive_file_name="gitleaks_${gitleaks_tag}_${os_type}_${os_arch}.${archive_type}"
+    echo "Archive File name: $archive_file_name"
+    download_link="https://github.com/gitleaks/gitleaks/releases/download/v${gitleaks_tag}/${archive_file_name}"
+    echo "Download link $download_link"
+    # download and unpack gitleaks executable
+    curl -L -o "$archive_file_name" "$download_link"
+    extract_gitleaks "$archive_file_name" "$archive_type"
+    rm "$archive_file_name"
 
-if { ! [ -f gitleaks ] && ! [ -f gitleaks.exe ] ;} || [ -z "$is_enabled" ] || [ "$is_update" = "true" ]; then
-# Call the function to get the OS architecture
-os_arch=$(get_os_arch)
-echo "The OS architecture is: $os_arch"
-# Call the function to get the OS type
-os_type=$(get_os_type)
-#os_type="windows"
-echo "The OS type is: $os_type"
-archive_type=$(get_archive_type $os_type)
-echo "The archive type is: $archive_type"
-
-gitleaks_tag=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases?per_page=1 | grep -o '"tag_name": *"[^"]*"' | cut -d '"' -f 4 | sed 's/^.\(.*\)$/\1/')
-echo "The actual gitleaks release is is: $gitleaks_tag"
-
-archive_file_name="gitleaks_${gitleaks_tag}_${os_type}_${os_arch}.${archive_type}"
-download_link="https://github.com/gitleaks/gitleaks/releases/download/v${gitleaks_tag}/${archive_file_name}"
-echo "Download link $download_link"
-echo "File name: $archive_file_name"
-curl -L -o "$archive_file_name" "$download_link"
-extract_gitleaks "$archive_file_name" "$archive_type"
-#rm "$archive_file_name"
-
-# set git config enable
-git config --local --add hooks.pre-commit.enable true
+    # set git config enable
+    git config --local --add hooks.pre-commit.enable true
 fi
 
 if [ "$is_enabled" = "true" ]; then
-    gl="./gitleaks"
+    gl=".git/hooks/gitleaks"
     if [ "$(get_os_type)" = "windows" ]; then
-        gl="./gitleaks.exe"
+        gl=".git/hooks/gitleaks.exe"
     fi
     $gl protect -v --staged
 
