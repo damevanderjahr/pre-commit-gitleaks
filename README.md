@@ -44,6 +44,9 @@ Ubuntu:
 Windows:
 ![Image](doc/img/windows.png)
 
+Telegram token test:
+![Image](doc/img/tg_token_test.png)
+
 ## Disable check
 
 Check could be disabled with
