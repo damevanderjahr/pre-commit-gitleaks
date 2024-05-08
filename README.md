@@ -6,13 +6,31 @@ This is proof-of-concept scripts for gitleaks pre-commit hook install. It's bett
 
 Use officially approved way: [.pre-commit-config.yaml](https://github.com/gitleaks/gitleaks?tab=readme-ov-file#pre-commit) + [pre-commit tool](https://pre-commit.com/#install)
 
-## Installation
+## Installation and updates
 
 Run in your target clonned repo directory:
 
 ```sh
 curl -L https://raw.githubusercontent.com/damevanderjahr/pre-commit-gitleaks/main/install.sh | sh
 ```
+
+This command install pre-commit hook, or updates the existing one
+
+gitleaks binary is downloaded during the first check, and could be updated with
+
+```bash
+.git/hooks/pre-commit --update
+```
+
+if gitleaks is the only pre-commit hook
+
+or
+
+```bash
+.git/hooks/pre-commit-gitleaks --update
+```
+
+if there was other pre-commit hook script before the installation.
 
 ## OS support
 
@@ -25,3 +43,11 @@ Ubuntu:
 
 Windows:
 ![Image](doc/img/windows.png)
+
+## Disable check
+
+Check could be disabled with
+
+```sh
+git config --local --add hooks.pre-commit.enable false
+```
