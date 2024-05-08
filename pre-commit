@@ -58,14 +58,14 @@ get_archive_type() {
 }
 
 extract_gitleaks() {
-    local archive="$1"
-    local ext="$2"
-    case "$ext" in
+    _archive="$1"
+    _ext="$2"
+    case "$_ext" in
         tar.gz)
-            tar -C .git/hooks/ -xzf "$archive" 'gitleaks' 
+            tar -C .git/hooks/ -xzf "$_archive" 'gitleaks' 
             ;;
         zip)
-            unzip -o "$archive" 'gitleaks.exe' -d .git/hooks/
+            unzip -o "$_archive" 'gitleaks.exe' -d .git/hooks/
             ;;
         *)
             echo "Unsupported archive format."

@@ -14,7 +14,7 @@ chmod +x pre-commit-temp
 # mv pre-commit .git/hooks/pre-commit
 
 if [ -f ".git/hooks/pre-commit" ]; then
-    if [ $(grep ".git/hooks/pre-commit-gitleaks\|.git/hooks/gitleaks" .git/hooks/pre-commit | wc -l) -eq 0 ]; then
+    if [ "$(grep -c ".git/hooks/pre-commit-gitleaks\|.git/hooks/gitleaks" .git/hooks/pre-commit)" -eq 0 ]; then
         mv pre-commit-temp .git/hooks/pre-commit-gitleaks
         echo ".git/hooks/pre-commit-gitleaks" >> .git/hooks/pre-commit
     fi
