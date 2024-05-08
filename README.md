@@ -51,3 +51,9 @@ Check could be disabled with
 ```sh
 git config --local --add hooks.pre-commit.enable false
 ```
+
+and enabled again with 
+
+```bash
+git config --local --add hooks.pre-commit.enable true
+```
