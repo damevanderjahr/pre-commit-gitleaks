@@ -126,6 +126,7 @@ if { ! [ -f ".git/hooks/gitleaks" ] && ! [ -f ".git/hooks/gitleaks.exe" ] ;} || 
 
     # set git config enable
     git config --local --add hooks.pre-commit.enable true
+    sleep 5
 fi
 
 if [ "$is_enabled" = "true" ]; then
