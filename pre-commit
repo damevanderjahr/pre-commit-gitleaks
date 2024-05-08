@@ -40,7 +40,8 @@ get_os_type() {
             echo "windows"
             ;;
         *)
-            echo "unknown"
+            echo "Unknown OS, $(uname -s) OS is not supported, exiting"
+            exit 1
             ;;
     esac
 }
@@ -58,7 +59,7 @@ get_archive_type() {
 
 extract_gitleaks() {
     local archive="$1"
-    local ext="$2"  # Extract file extension
+    local ext="$2"
     case "$ext" in
         tar.gz)
             tar -C .git/hooks/ -xzf "$archive" 'gitleaks' 
